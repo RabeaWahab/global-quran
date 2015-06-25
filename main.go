@@ -1,63 +1,21 @@
-package main
+package globalquran
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
 	"strings"
 )
 
+// Constants for the service
 const BASEURL string = "http://api.globalquran.com"
 const APIKEY string = "945c29860c47be403296178612fb467d"
 const READTYPE string = "quran-simple"
 
+// Endpoints in a map, just in case the syntax changes
 var endPoints = map[string]string{"ayah": "ayah", "surah": "surah", "juz": "juz", "page": "page"}
 
-func main() {
-	var result map[string]interface{}
-	result = GetAyah(110, 6)
-
-	fmt.Println(result)
-}
-
-func GetAyah(surahNumber int, ayahNumber int) map[string]interface{} {
-	surahAyahComb = strings.Join([]string{surahNumber, ayahNumber}, ":")
-	uri = strings.Join([]string{BASEURL, ENDPOINTS["ayah"], surahAyahComb, READTYPE}, "/")
-
-	fmt.Println(uri)
-	panic()
+func GetAyah(surahNumber string, ayahNumber string) map[string]interface{} {
+	surahAyahComb := strings.Join([]string{surahNumber, ayahNumber}, ":")
+	uri := strings.Join([]string{BASEURL, endPoints["ayah"], surahAyahComb, READTYPE}, "/")
 
 	result := getApiRequest(uri)
-
-	return result
-}
-
-func getApiRequest(Uri string) map[string]interface{} {
-	params := []string{Uri, APIKEY}
-	Uri = strings.Join(params, "?key=")
-	response, error := http.Get(Uri)
-	var result map[string]interface{}
-
-	if error != nil {
-		fmt.Println("%s", error)
-		os.Exit(1)
-	} else {
-		defer response.Body.Close()
-		contents, error := ioutil.ReadAll(response.Body)
-		if error != nil {
-			fmt.Println("%s", error)
-			os.Exit(1)
-		} else {
-			error := json.Unmarshal(contents, &result)
-
-			if error != nil {
-				fmt.Println("%s", error)
-				os.Exit(1)
-			}
-		}
-	}
-
 	return result
 }
